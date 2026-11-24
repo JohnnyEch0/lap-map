@@ -1,0 +1,6 @@
+{
+  "name": "@earendil-works/pi-coding-agent",
+  "version": "1.5.2",
+  "types": "./index.d.ts",
+  "private": true
+}

@@ -1,0 +1,21 @@
+{
+	"name": "pi-extension-lap-map",
+	"version": "1.0.0",
+	"description": "Pi extension: expands lapmap/lapman prompts to 'in as little words as possible, as much as necessary'.",
+	"type": "module",
+	"private": true,
+	"scripts": {
+		"prepare": "git config core.hooksPath .githooks",
+		"lint": "biome check .",
+		"format": "biome format --write .",
+		"typecheck": "tsc --noEmit",
+		"test": "vitest run",
+		"check": "npm run lint && npm run typecheck && npm run test"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "^2.0.0",
+		"typescript": "^5.9.0",
+		"vitest": "^3.0.0",
+		"@earendil-works/pi-coding-agent": "file:vendor/pi-agent-types"
+	}
+}

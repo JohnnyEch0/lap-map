@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+set -euo pipefail
+echo "[pre-commit] lint"
+npx biome check .
+echo "[pre-commit] typecheck"
+npx tsc --noEmit
+echo "[pre-commit] tests"
+npx vitest run

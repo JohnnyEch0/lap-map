@@ -1,16 +1,20 @@
 # lap-map
 
-Pi extension. Replaces `lapmap` / `lapman` (case-insensitive, word-boundary) in
-your prompts with "in as little words as possible, as much as necessary".
+Pi extension. Replaces `lapmap` / `lapman` (case-insensitive, word boundaries) in your prompt with:
 
-Loaded automatically from `~/.pi/agent/extensions/lap-map/index.ts`.
-Reload live in Pi with `/reload`.
+> in as little words as possible, as much as necessary
+
+Loaded from `~/.pi/agent/extensions/lap-map/index.ts`. Reload with `/reload`.
 
 ## Dev
 
 ```sh
-npm install        # also wires git hooks via core.hooksPath
-npm run check      # lint + typecheck + tests
+npm install   # wires pre-commit hook
+npm run check # lint + typecheck + tests
 ```
 
-Pre-commit runs lint, typecheck, and tests. Commits fail if any of them do.
+Pre-commit: lint, typecheck, tests. Fail any, no commit.
+
+## Roadmap
+
+Generalize: arbitrary token → phrase mappings, user config. See issue #1.

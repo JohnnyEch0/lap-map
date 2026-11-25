@@ -3,7 +3,7 @@ import type { AutocompleteItem, AutocompleteProvider } from "../index";
 import { createShortcutProvider, extractToken, filterShortcuts, SHORTCUTS } from "../index";
 
 const LAPMAN = SHORTCUTS.find((s) => s.token === "lapman");
-const CLARIFY = SHORTCUTS.find((s) => s.token === "_clarify");
+const CLARIFY = SHORTCUTS.find((s) => s.token === "clarify");
 if (!LAPMAN || !CLARIFY) throw new Error("test setup: shortcuts missing");
 
 /** Stand-in for pi's built-in provider: records delegation, returns a sentinel. */
@@ -33,7 +33,7 @@ describe("extractToken", () => {
 	});
 
 	it("extracts at line start", () => {
-		expect(extractToken("#_clarify")).toBe("_clarify");
+		expect(extractToken("#clarify")).toBe("clarify");
 	});
 
 	it("empty token for bare #", () => {
@@ -58,8 +58,8 @@ describe("filterShortcuts", () => {
 		expect(filterShortcuts("LAP")).toEqual([LAPMAN]);
 	});
 
-	it("underscore prefix matches _clarify", () => {
-		expect(filterShortcuts("_")).toEqual([CLARIFY]);
+	it("prefix c matches clarify", () => {
+		expect(filterShortcuts("c")).toEqual([CLARIFY]);
 	});
 
 	it("unmatched token matches nothing", () => {
@@ -123,11 +123,11 @@ describe("provider.applyCompletion", () => {
 
 	it("leaves other lines untouched", () => {
 		const result = provider.applyCompletion(
-			["first", "fix #_clarify", "third"],
+			["first", "fix #clarify", "third"],
 			1,
-			"fix #_clarify".length,
+			"fix #clarify".length,
 			{ value: CLARIFY.phrase, label: CLARIFY.token },
-			"#_clarify",
+			"#clarify",
 		);
 		expect(result.lines[0]).toBe("first");
 		expect(result.lines[2]).toBe("third");

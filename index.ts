@@ -54,7 +54,7 @@ export const SHORTCUTS: Shortcut[] = [
 		description: "brevity directive",
 	},
 	{
-		token: "_clarify",
+		token: "clarify",
 		phrase:
 			"Make sure to clarify what is expected of you by first asking important follow up questions before starting to work on the actual task.",
 		description: "clarify expectations before starting",

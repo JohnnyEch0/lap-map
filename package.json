@@ -1,7 +1,7 @@
 {
 	"name": "pi-extension-lapman",
 	"version": "1.0.0",
-	"description": "Pi extension: # shortcuts — autocomplete menu inserting token phrases (lapman, _clarify).",
+	"description": "Pi extension: # shortcuts — autocomplete menu inserting token phrases (lapman, clarify).",
 	"type": "module",
 	"private": true,
 	"scripts": {

@@ -1,5 +1,5 @@
 {
-	"name": "pi-extension-lap-map",
+	"name": "pi-extension-lapman",
 	"version": "1.0.0",
 	"description": "Pi extension: # shortcuts — autocomplete menu inserting token phrases (lapman, _clarify).",
 	"type": "module",

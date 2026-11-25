@@ -1,5 +1,5 @@
 /**
- * lap-map — `#` shortcuts in the pi input.
+ * lapman — `#` shortcuts in the pi input.
  *
  * Typing `#` opens the autocomplete menu (same overlay as `@` for files).
  * Selecting an entry — or fully typing its token and completing — inserts

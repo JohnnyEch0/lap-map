@@ -44,7 +44,7 @@ export interface Shortcut {
 	/** Phrase inserted in place of `#token`. */
 	phrase: string;
 	/** One-liner shown in the menu. */
-	description: string;
+	description?: string;
 }
 
 export const SHORTCUTS: Shortcut[] = [
@@ -71,13 +71,19 @@ export function extractToken(textBeforeCursor: string): string | undefined {
 }
 
 /** Filters shortcuts by token prefix. Empty token matches all. */
-export function filterShortcuts(token: string): Shortcut[] {
+export function filterShortcuts(shortcuts: Shortcut[], token: string): Shortcut[] {
 	const lower = token.toLowerCase();
-	return SHORTCUTS.filter((s) => s.token.toLowerCase().startsWith(lower));
+	return shortcuts.filter((s) => s.token.toLowerCase().startsWith(lower));
 }
 
-/** Builds the provider that wraps pi's built-in autocomplete. Exported for testing. */
-export function createShortcutProvider(current: AutocompleteProvider): AutocompleteProvider {
+/**
+ * Builds the provider that wraps pi's built-in autocomplete. `shortcuts`
+ * defaults to the built-ins; tests inject their own. Exported for testing.
+ */
+export function createShortcutProvider(
+	current: AutocompleteProvider,
+	shortcuts: Shortcut[] = SHORTCUTS,
+): AutocompleteProvider {
 	return {
 		triggerCharacters: ["#"],
 		async getSuggestions(lines, cursorLine, cursorCol, options) {
@@ -86,7 +92,7 @@ export function createShortcutProvider(current: AutocompleteProvider): Autocompl
 			if (token === undefined) {
 				return current.getSuggestions(lines, cursorLine, cursorCol, options);
 			}
-			const matches = filterShortcuts(token);
+			const matches = filterShortcuts(shortcuts, token);
 			if (matches.length === 0) {
 				return null;
 			}

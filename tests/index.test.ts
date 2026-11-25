@@ -51,19 +51,19 @@ describe("extractToken", () => {
 
 describe("filterShortcuts", () => {
 	it("empty token matches all", () => {
-		expect(filterShortcuts("")).toHaveLength(SHORTCUTS.length);
+		expect(filterShortcuts(SHORTCUTS, "")).toHaveLength(SHORTCUTS.length);
 	});
 
 	it("prefix match is case-insensitive", () => {
-		expect(filterShortcuts("LAP")).toEqual([LAPMAN]);
+		expect(filterShortcuts(SHORTCUTS, "LAP")).toEqual([LAPMAN]);
 	});
 
 	it("prefix c matches clarify", () => {
-		expect(filterShortcuts("c")).toEqual([CLARIFY]);
+		expect(filterShortcuts(SHORTCUTS, "c")).toEqual([CLARIFY]);
 	});
 
 	it("unmatched token matches nothing", () => {
-		expect(filterShortcuts("zzz")).toEqual([]);
+		expect(filterShortcuts(SHORTCUTS, "zzz")).toEqual([]);
 	});
 });
 
@@ -83,6 +83,18 @@ describe("provider.getSuggestions", () => {
 
 	it("returns null for unmatched token", async () => {
 		expect(await getSuggestions("#zzz")).toBeNull();
+	});
+
+	it("uses injected shortcuts, not just built-ins", async () => {
+		const custom = createShortcutProvider(current, [
+			{ token: "ship", phrase: "Commit, push, open PR." },
+		]);
+		const result = await custom.getSuggestions(["#sh"], 0, 3, {
+			signal: new AbortController().signal,
+		});
+		expect(result?.items).toEqual([
+			{ value: "Commit, push, open PR.", label: "ship", description: undefined },
+		]);
 	});
 
 	it("delegates to current provider without #", async () => {

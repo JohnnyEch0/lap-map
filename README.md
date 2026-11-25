@@ -1,8 +1,11 @@
 # lap-map
 
-Pi extension. Replaces `lapmap` / `lapman` (case-insensitive, word boundaries) in your prompt with:
+Pi extension. Type `#` in the input: autocomplete menu (like `@` for files) with shortcut tokens. Selecting — or fully typing and completing — inserts the phrase, removes the `#token`.
 
-> in as little words as possible, as much as necessary
+- `#lapman` — in as little words as possible, as much as necessary
+- `#_clarify` — Make sure to clarify what is expected of you by first asking important follow up questions before starting to work on the actual task.
+
+Shortcuts: table in `index.ts` (`SHORTCUTS`). Headings (`# TODO`) unaffected — token must follow `#` directly.
 
 Loaded from `~/.pi/agent/extensions/lap-map/index.ts`. Reload with `/reload`.
 

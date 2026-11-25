@@ -1,7 +1,7 @@
 {
 	"name": "pi-extension-lap-map",
 	"version": "1.0.0",
-	"description": "Pi extension: expands lapmap/lapman prompts to 'in as little words as possible, as much as necessary'.",
+	"description": "Pi extension: # shortcuts — autocomplete menu inserting token phrases (lapman, _clarify).",
 	"type": "module",
 	"private": true,
 	"scripts": {

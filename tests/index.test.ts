@@ -134,3 +134,85 @@ describe("provider.applyCompletion", () => {
 		expect(result.cursorLine).toBe(1);
 	});
 });
+
+// Regression: issue #2 — the wrapper became the top-level provider and the
+// editor calls ITS applyCompletion for every menu completion. Non-# prefixes
+// must be delegated to the wrapped (builtin) provider verbatim.
+describe("provider.applyCompletion: delegation for non-# prefixes (issue #2)", () => {
+	const slashItem: AutocompleteItem = { value: "plan", label: "plan" };
+	const fileItem: AutocompleteItem = { value: "src/index.ts", label: "src/index.ts" };
+	const argItem: AutocompleteItem = { value: "openai/gpt-4o", label: "openai/gpt-4o" };
+
+	it("delegates slash-command completion (/ prefix) to the wrapped provider", () => {
+		const sentinel = { lines: ["/plan "], cursorLine: 0, cursorCol: 6 };
+		const spy: AutocompleteProvider = {
+			async getSuggestions() {
+				return { items: [slashItem], prefix: "/plan" };
+			},
+			applyCompletion() {
+				return sentinel;
+			},
+		};
+		const result = createShortcutProvider(spy).applyCompletion(["/plan"], 0, 5, slashItem, "/plan");
+		expect(result).toBe(sentinel);
+	});
+
+	it("keeps the slash on completed commands (symptom: /plan sent as 'plan')", () => {
+		// Mirrors pi's CombinedAutocompleteProvider slash branch: items carry the
+		// bare name, the builtin re-attaches "/" and the trailing space.
+		const builtin: AutocompleteProvider = {
+			async getSuggestions() {
+				return { items: [slashItem], prefix: "/plan" };
+			},
+			applyCompletion(lines, cursorLine, cursorCol, item, prefix) {
+				const line = lines[cursorLine] ?? "";
+				const before = line.slice(0, cursorCol - prefix.length);
+				const after = line.slice(cursorCol);
+				const newLines = [...lines];
+				newLines[cursorLine] = `${before}/${item.value} ${after}`;
+				return {
+					lines: newLines,
+					cursorLine,
+					cursorCol: before.length + item.value.length + 2,
+				};
+			},
+		};
+		const result = createShortcutProvider(builtin).applyCompletion(
+			["/plan"],
+			0,
+			5,
+			slashItem,
+			"/plan",
+		);
+		expect(result.lines[0]).toBe("/plan ");
+		expect(result.cursorCol).toBe(6);
+	});
+
+	it("delegates file completion (@ prefix) to the wrapped provider", () => {
+		const sentinel = { lines: ["@src/index.ts "], cursorLine: 0, cursorCol: 14 };
+		const spy: AutocompleteProvider = {
+			async getSuggestions() {
+				return { items: [fileItem], prefix: "@src" };
+			},
+			applyCompletion() {
+				return sentinel;
+			},
+		};
+		const result = createShortcutProvider(spy).applyCompletion(["@src"], 0, 4, fileItem, "@src");
+		expect(result).toBe(sentinel);
+	});
+
+	it("delegates command-argument completion (bare prefix after /cmd) to the wrapped provider", () => {
+		const sentinel = { lines: ["/model openai/gpt-4o "], cursorLine: 0, cursorCol: 21 };
+		const spy: AutocompleteProvider = {
+			async getSuggestions() {
+				return { items: [argItem], prefix: "fo" };
+			},
+			applyCompletion() {
+				return sentinel;
+			},
+		};
+		const result = createShortcutProvider(spy).applyCompletion(["/model fo"], 0, 9, argItem, "fo");
+		expect(result).toBe(sentinel);
+	});
+});

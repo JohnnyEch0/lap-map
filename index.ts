@@ -100,6 +100,13 @@ export function createShortcutProvider(current: AutocompleteProvider): Autocompl
 			};
 		},
 		applyCompletion(lines, cursorLine, cursorCol, item, prefix) {
+			// The wrapper is the top-level provider, so the editor calls OUR
+			// applyCompletion for every menu completion. Non-# completions
+			// (slash commands, @ files, command arguments) belong to the wrapped
+			// builtin provider — delegate verbatim (issue #2).
+			if (!prefix.startsWith("#")) {
+				return current.applyCompletion(lines, cursorLine, cursorCol, item, prefix);
+			}
 			const line = lines[cursorLine] ?? "";
 			const beforePrefix = line.slice(0, cursorCol - prefix.length);
 			const afterCursor = line.slice(cursorCol);

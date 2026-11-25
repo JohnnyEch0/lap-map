@@ -5,7 +5,10 @@
  * Selecting an entry — or fully typing its token and completing — inserts
  * the entry's phrase and removes the `#token`.
  */
-import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
+
+import { join } from "node:path";
+import { CONFIG_DIR_NAME, type ExtensionAPI, getAgentDir } from "@earendil-works/pi-coding-agent";
+import { loadConfigFile, resolveShortcuts } from "./config";
 
 // Minimal structural types mirroring @earendil-works/pi-tui's autocomplete API.
 // The public pi-coding-agent package only re-exports AutocompleteProviderFactory,
@@ -77,8 +80,9 @@ export function filterShortcuts(shortcuts: Shortcut[], token: string): Shortcut[
 }
 
 /**
- * Builds the provider that wraps pi's built-in autocomplete. `shortcuts`
- * defaults to the built-ins; tests inject their own. Exported for testing.
+ * Builds the provider that wraps pi's built-in autocomplete. `shortcuts` is
+ * resolved configuration (built-ins + user config); defaults to built-ins.
+ * Exported for testing.
  */
 export function createShortcutProvider(
 	current: AutocompleteProvider,
@@ -136,6 +140,16 @@ export function createShortcutProvider(
 
 export default function (pi: ExtensionAPI): void {
 	pi.on("session_start", (_event, ctx) => {
-		ctx.ui.addAutocompleteProvider((current) => createShortcutProvider(current));
+		const layers: Shortcut[][] = [SHORTCUTS];
+		const global = loadConfigFile(join(getAgentDir(), "lapman.json"));
+		layers.push(global.entries);
+		if (ctx.isProjectTrusted()) {
+			const project = loadConfigFile(join(ctx.cwd, CONFIG_DIR_NAME, "lapman.json"));
+			layers.push(project.entries);
+			for (const err of project.errors) console.warn(`lapman: ${err}`);
+		}
+		for (const err of global.errors) console.warn(`lapman: ${err}`);
+		const shortcuts = resolveShortcuts(...layers);
+		ctx.ui.addAutocompleteProvider((current) => createShortcutProvider(current, shortcuts));
 	});
 }
